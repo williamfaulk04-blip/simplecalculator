@@ -27,7 +27,7 @@ void main() {
   testWidgets('3 times 5', (tester) async {
     // setup
     await tester.pumpWidget(const MyApp());
-    // select 2, +, 2, =
+    // select 3, ×, 5, =
     await press(tester, ['3', '×', '5', '=']);
     // compare against expected
     expect(display(tester), '15');
@@ -36,7 +36,7 @@ void main() {
   testWidgets('9 divided by 3', (tester) async {
     // setup
     await tester.pumpWidget(const MyApp());
-    // select 2, +, 2, =
+    // select 9, ÷, 3, =
     await press(tester, ['9', '÷', '3', '=']);
     // compare against expected
     expect(display(tester), '3');
@@ -45,7 +45,7 @@ void main() {
   testWidgets('-4 plus -2', (tester) async {
     // setup
     await tester.pumpWidget(const MyApp());
-    // select 2, +, 2, =
+    // select 4, ±, +, 2, ±, =
     await press(tester, ['4', '±', '+', '2', '±', '=']);
     // compare against expected
     expect(display(tester), '-6');
@@ -54,7 +54,7 @@ void main() {
   testWidgets('9 times 3', (tester) async {
     // setup
     await tester.pumpWidget(const MyApp());
-    // select 2, +, 2, =
+    // select 9, ×, 3, =
     await press(tester, ['9', '×', '3', '=']);
     // compare against expected
     expect(display(tester), '27');
