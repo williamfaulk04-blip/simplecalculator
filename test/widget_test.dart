@@ -15,6 +15,15 @@ void main() {
   String display(WidgetTester tester) =>
       tester.widget<Text>(find.byKey(const ValueKey('display'))).data!;
 
+  testWidgets('two plus two', (tester) async {
+    // setup
+    await tester.pumpWidget(const MyApp());
+    // select 2, +, 2, =
+    await press(tester, ['2', '+', '2', '=']);
+    // compare against expected
+    expect(display(tester), '4');
+  });
+
   testWidgets('Basic arithmetic and left-to-right chaining', (tester) async {
     await tester.pumpWidget(const MyApp());
     await press(tester, ['8', '+', '2', '=']);
