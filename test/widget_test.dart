@@ -1,30 +1,50 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:simplecalculator/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
+  Future<void> press(WidgetTester tester, List<String> keys) async {
+    for (final key in keys) {
+      final button = find.widgetWithText(FilledButton, key);
+      await tester.ensureVisible(button);
+      await tester.tap(button);
+      await tester.pump();
+    }
+  }
+
+  String display(WidgetTester tester) =>
+      tester.widget<Text>(find.byKey(const ValueKey('display'))).data!;
+
+  testWidgets('Basic arithmetic and left-to-right chaining', (tester) async {
     await tester.pumpWidget(const MyApp());
+    await press(tester, ['8', '+', '2', '=']);
+    expect(display(tester), '10');
+    await press(tester, ['−', '4', '×', '3', '÷', '2', '=']);
+    expect(display(tester), '9');
+    await press(tester, ['7']);
+    expect(display(tester), '7');
+  });
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  testWidgets('Decimals, editing, sign changes, and clear', (tester) async {
+    await tester.pumpWidget(const MyApp());
+    await press(tester, ['.', '5', '.', '2', '⌫', '±', '+', '1', '=']);
+    expect(display(tester), '0.5');
+    await press(tester, ['AC']);
+    expect(display(tester), '0');
+    await press(tester, ['0', '.', '1', '+', '0', '.', '2', '=']);
+    expect(display(tester), '0.3');
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  testWidgets('Replace an operator and recover from division by zero', (
+    tester,
+  ) async {
+    await tester.pumpWidget(const MyApp());
+    await press(tester, ['6', '+', '×', '2', '=']);
+    expect(display(tester), '12');
+    await press(tester, ['÷', '0', '=']);
+    expect(display(tester), 'Error');
+    expect(find.text('Cannot divide by zero'), findsOneWidget);
+    await press(tester, ['3', '+', '4', '=']);
+    expect(display(tester), '7');
   });
 }
